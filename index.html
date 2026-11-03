@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6d28d9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Anniv">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.jpg">
+<title>🎂 Calculateur d'Anniversaires</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --accent: #8b5cf6;
+    --accent-dark: #6d28d9;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 16px;
+    padding-top: max(16px, env(safe-area-inset-top));
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .container {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border-radius: 24px;
+    padding: 28px 20px 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .header img {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 1.55rem;
+    font-weight: 700;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 4px;
+  }
+  label {
+    display: block;
+    margin: 16px 0 6px;
+    font-weight: 500;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .date-row {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1fr;
+    gap: 10px;
+  }
+  select {
+    width: 100%;
+    padding: 14px 10px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    background: #0f172a;
+    color: var(--text);
+    font-size: 1rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  button {
+    width: 100%;
+    margin-top: 22px;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  button:active { transform: scale(0.97); }
+  #result {
+    margin-top: 22px;
+    background: #0f172a;
+    border-radius: 16px;
+    padding: 18px;
+    line-height: 1.65;
+    font-size: 0.95rem;
+    white-space: pre-wrap;
+    min-height: 160px;
+    color: #e2e8f0;
+  }
+  .install-hint {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <img src="icon-192.jpg" alt="Icon">
+    <h1>🎂 Anniversaires</h1>
+    <p class="subtitle">Âge · Prochain anniversaire · Signes</p>
+  </div>
+
+  <label>Jour</label>
+  <div class="date-row">
+    <div>
+      <select id="day"></select>
+    </div>
+    <div>
+      <label style="margin:0 0 6px">Mois</label>
+      <select id="month">
+        <option value="1">Janvier</option>
+        <option value="2">Février</option>
+        <option value="3">Mars</option>
+        <option value="4">Avril</option>
+        <option value="5">Mai</option>
+        <option value="6">Juin</option>
+        <option value="7">Juillet</option>
+        <option value="8">Août</option>
+        <option value="9">Septembre</option>
+        <option value="10">Octobre</option>
+        <option value="11">Novembre</option>
+        <option value="12">Décembre</option>
+      </select>
+    </div>
+    <div>
+      <label style="margin:0 0 6px">Année</label>
+      <select id="year"></select>
+    </div>
+  </div>
+
+  <button onclick="calculate()">✨ Calculer</button>
+
+  <div id="result">Choisis ta date de naissance puis appuie sur Calculer.</div>
+
+  <p class="install-hint" id="installHint"></p>
+</div>
+
+<script>
+const daySelect = document.getElementById('day');
+const yearSelect = document.getElementById('year');
+const currentYear = new Date().getFullYear();
+
+for (let d = 1; d <= 31; d++) {
+  const opt = document.createElement('option');
+  opt.value = d;
+  opt.textContent = d;
+  daySelect.appendChild(opt);
+}
+daySelect.value = 1;
+
+for (let y = currentYear; y >= 1900; y--) {
+  const opt = document.createElement('option');
+  opt.value = y;
+  opt.textContent = y;
+  yearSelect.appendChild(opt);
+}
+yearSelect.value = 1990;
+
+function getZodiac(month, day) {
+  const signs = [
+    ["Capricorne", 1, 19], ["Verseau", 2, 18], ["Poissons", 3, 20],
+    ["Bélier", 4, 19], ["Taureau", 5, 20], ["Gémeaux", 6, 20],
+    ["Cancer", 7, 22], ["Lion", 8, 22], ["Vierge", 9, 22],
+    ["Balance", 10, 22], ["Scorpion", 11, 21], ["Sagittaire", 12, 21],
+    ["Capricorne", 12, 31]
+  ];
+  for (let i = 0; i < signs.length; i++) {
+    const [name, m, d] = signs[i];
+    if (month < m || (month === m && day <= d)) return name;
+  }
+  return "Capricorne";
+}
+
+function getChineseZodiac(year) {
+  const animals = ["Rat", "Buffle", "Tigre", "Lapin", "Dragon", "Serpent",
+                   "Cheval", "Chèvre", "Singe", "Coq", "Chien", "Cochon"];
+  return animals[(year - 4) % 12];
+}
+
+function calculateAge(birth, today) {
+  let years = today.getFullYear() - birth.getFullYear();
+  let months = today.getMonth() - birth.getMonth();
+  let days = today.getDate() - birth.getDate();
+
+  if (days < 0) {
+    months--;
+    const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+    days += prevMonth.getDate();
+  }
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+  return { years, months, days };
+}
+
+function calculate() {
+  const day = parseInt(document.getElementById('day').value);
+  const month = parseInt(document.getElementById('month').value);
+  const year = parseInt(document.getElementById('year').value);
+
+  const birth = new Date(year, month - 1, day);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  if (birth > today) {
+    document.getElementById('result').textContent = "❌ La date ne peut pas être dans le futur.";
+    return;
+  }
+
+  const age = calculateAge(birth, today);
+
+  let nextBirthday = new Date(today.getFullYear(), month - 1, day);
+  if (nextBirthday < today) {
+    nextBirthday = new Date(today.getFullYear() + 1, month - 1, day);
+  }
+  if (isNaN(nextBirthday.getTime())) {
+    nextBirthday = new Date(today.getFullYear() + 1, 1, 28);
+  }
+
+  const daysUntil = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+  const weekdays = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+  const weekday = weekdays[nextBirthday.getDay()];
+
+  const zodiac = getZodiac(month, day);
+  const chinese = getChineseZodiac(year);
+  const ageNext = age.years + (nextBirthday > today ? 1 : 0);
+
+  const result = `📅 Date de naissance
+${String(day).padStart(2,'0')}/${String(month).padStart(2,'0')}/${year}
+
+🎂 Âge actuel
+${age.years} ans, ${age.months} mois et ${age.days} jours
+
+✨ Signe astrologique : ${zodiac}
+🐉 Signe chinois : ${chinese}
+
+🎉 Prochain anniversaire
+${nextBirthday.getDate().toString().padStart(2,'0')}/${(nextBirthday.getMonth()+1).toString().padStart(2,'0')}/${nextBirthday.getFullYear()} (${weekday})
+
+⏳ Dans ${daysUntil} jour${daysUntil > 1 ? 's' : ''}
+🎁 Tu auras ${ageNext} ans`;
+
+  document.getElementById('result').textContent = result;
+}
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+// Indication d'installation
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+if (!isStandalone) {
+  document.getElementById('installHint').textContent = "💡 Pour installer : menu du navigateur → « Ajouter à l'écran d'accueil »";
+}
+</script>
+</body>
+</html>
