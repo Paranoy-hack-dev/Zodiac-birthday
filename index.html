@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#6d28d9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Zodiac">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.jpg">
+<title>Zodiac & Anniversaires</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card2: #0f172a;
+    --accent: #8b5cf6;
+    --accent-dark: #6d28d9;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: #334155;
+  }
+  [data-theme="light"] {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --card2: #f1f5f9;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 12px;
+    padding-top: max(12px, env(safe-area-inset-top));
+    transition: background 0.3s, color 0.3s;
+  }
+  .container {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    background: var(--card);
+    border-radius: 24px;
+    padding: 24px 18px 28px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  }
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .top-bar h1 { font-size: 1.4rem; }
+  .theme-btn, .share-btn {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .header-img {
+    width: 64px; height: 64px; border-radius: 16px; margin: 0 auto 8px; display: block;
+  }
+  .subtitle { text-align: center; color: var(--muted); font-size: 0.85rem; margin-bottom: 18px; }
+  label { display: block; margin: 12px 0 5px; font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+  .row { display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 8px; }
+  .row.time { grid-template-columns: 1fr 1fr; }
+  select, input {
+    width: 100%;
+    padding: 12px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card2);
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  button.primary {
+    width: 100%;
+    margin-top: 18px;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button.primary:active { transform: scale(0.98); }
+  #result {
+    margin-top: 18px;
+    background: var(--card2);
+    border-radius: 16px;
+    padding: 16px;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    min-height: 120px;
+  }
+  .saved {
+    margin-top: 20px;
+  }
+  .saved h3 { font-size: 0.95rem; margin-bottom: 8px; }
+  .saved-item {
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+  }
+  .saved-item button {
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+  .install-hint { text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 14px; }
+  .note { font-size: 0.75rem; color: var(--muted); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <h1>🎂 Zodiac</h1>
+    <div>
+      <button class="theme-btn" id="themeBtn">🌙</button>
+      <button class="share-btn" id="shareBtn" style="margin-left:6px">Partager</button>
+    </div>
+  </div>
+  <img src="icon-192.jpg" class="header-img" alt="">
+  <p class="subtitle">Âge · Signes · Lune · Ascendant</p>
+
+  <label>Nom (optionnel)</label>
+  <input type="text" id="name" placeholder="Ex: Marie">
+
+  <label>Date de naissance</label>
+  <div class="row">
+    <select id="day"></select>
+    <select id="month">
+      <option value="1">Janvier</option><option value="2">Février</option><option value="3">Mars</option>
+      <option value="4">Avril</option><option value="5">Mai</option><option value="6">Juin</option>
+      <option value="7">Juillet</option><option value="8">Août</option><option value="9">Septembre</option>
+      <option value="10">Octobre</option><option value="11">Novembre</option><option value="12">Décembre</option>
+    </select>
+    <select id="year"></select>
+  </div>
+
+  <label>Heure de naissance (pour Lune & Ascendant)</label>
+  <div class="row time">
+    <input type="number" id="hour" min="0" max="23" placeholder="Heure (0-23)" value="12">
+    <input type="number" id="minute" min="0" max="59" placeholder="Min" value="0">
+  </div>
+  <p class="note">Sans l’heure exacte, la Lune et l’ascendant sont approximatifs.</p>
+
+  <label>Lieu de naissance (ville)</label>
+  <input type="text" id="place" placeholder="Ex: Paris">
+
+  <button class="primary" onclick="calculate()">✨ Calculer & Sauvegarder</button>
+
+  <div id="result">Choisis une date puis calcule.</div>
+
+  <div class="saved">
+    <h3>📌 Anniversaires sauvegardés</h3>
+    <div id="savedList"></div>
+  </div>
+
+  <p class="install-hint" id="installHint"></p>
+</div>
+
+<script>
+const daySelect = document.getElementById('day');
+const yearSelect = document.getElementById('year');
+const currentYear = new Date().getFullYear();
+
+for (let d = 1; d <= 31; d++) {
+  const o = document.createElement('option'); o.value = d; o.textContent = d; daySelect.appendChild(o);
+}
+daySelect.value = 1;
+for (let y = currentYear; y >= 1900; y--) {
+  const o = document.createElement('option'); o.value = y; o.textContent = y; yearSelect.appendChild(o);
+}
+yearSelect.value = 1995;
+
+const ZODIAC = {
+  "Bélier": { element: "Feu", planet: "Mars", traits: "Énergique, courageux, impulsif, leader", strengths: "Initiative, passion" },
+  "Taureau": { element: "Terre", planet: "Vénus", traits: "Stable, sensuel, têtu, fiable", strengths: "Patience, loyauté" },
+  "Gémeaux": { element: "Air", planet: "Mercure", traits: "Curieux, communicatif, adaptable, changeant", strengths: "Intelligence, sociabilité" },
+  "Cancer": { element: "Eau", planet: "Lune", traits: "Émotif, protecteur, intuitif, familial", strengths: "Empathie, mémoire" },
+  "Lion": { element: "Feu", planet: "Soleil", traits: "Charismatique, généreux, fier, créatif", strengths: "Leadership, générosité" },
+  "Vierge": { element: "Terre", planet: "Mercure", traits: "Analytique, perfectionniste, serviable, discret", strengths: "Organisation, précision" },
+  "Balance": { element: "Air", planet: "Vénus", traits: "Harmonieux, diplomate, esthète, indécis", strengths: "Équité, charme" },
+  "Scorpion": { element: "Eau", planet: "Pluton", traits: "Intense, passionné, secret, transformateur", strengths: "Détermination, intuition" },
+  "Sagittaire": { element: "Feu", planet: "Jupiter", traits: "Aventurier, optimiste, philosophe, franc", strengths: "Liberté, sagesse" },
+  "Capricorne": { element: "Terre", planet: "Saturne", traits: "Ambitieux, discipliné, responsable, réservé", strengths: "Persévérance, ambition" },
+  "Verseau": { element: "Air", planet: "Uranus", traits: "Original, humaniste, indépendant, visionnaire", strengths: "Innovation, amitié" },
+  "Poissons": { element: "Eau", planet: "Neptune", traits: "Rêveur, empathique, artistique, sensible", strengths: "Imagination, compassion" }
+};
+
+function getSunSign(month, day) {
+  const signs = [
+    ["Capricorne",1,19],["Verseau",2,18],["Poissons",3,20],["Bélier",4,19],
+    ["Taureau",5,20],["Gémeaux",6,20],["Cancer",7,22],["Lion",8,22],
+    ["Vierge",9,22],["Balance",10,22],["Scorpion",11,21],["Sagittaire",12,21],["Capricorne",12,31]
+  ];
+  for (const [name,m,d] of signs) {
+    if (month < m || (month === m && day <= d)) return name;
+  }
+  return "Capricorne";
+}
+
+function getChinese(year) {
+  const animals = ["Rat","Buffle","Tigre","Lapin","Dragon","Serpent","Cheval","Chèvre","Singe","Coq","Chien","Cochon"];
+  const elements = ["Métal","Eau","Bois","Feu","Terre"];
+  const animal = animals[(year - 4) % 12];
+  const element = elements[Math.floor((year - 4) % 10 / 2)];
+  return { animal, element };
+}
+
+function approxMoonSign(day, month, year, hour) {
+  // Approximation très simplifiée (la Lune change de signe tous les ~2.5 jours)
+  const base = (month * 30 + day + hour / 24) % 12;
+  const signs = ["Bélier","Taureau","Gémeaux","Cancer","Lion","Vierge","Balance","Scorpion","Sagittaire","Capricorne","Verseau","Poissons"];
+  return signs[Math.floor(base) % 12];
+}
+
+function approxAscendant(hour, month) {
+  // Estimation grossière basée sur l'heure (sans latitude précise)
+  const signs = ["Bélier","Taureau","Gémeaux","Cancer","Lion","Vierge","Balance","Scorpion","Sagittaire","Capricorne","Verseau","Poissons"];
+  const index = Math.floor((hour + month) % 12);
+  return signs[index];
+}
+
+function calculateAge(birth, today) {
+  let years = today.getFullYear() - birth.getFullYear();
+  let months = today.getMonth() - birth.getMonth();
+  let days = today.getDate() - birth.getDate();
+  if (days < 0) {
+    months--;
+    days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+  }
+  if (months < 0) { years--; months += 12; }
+  return { years, months, days };
+}
+
+function calculate() {
+  const day = +document.getElementById('day').value;
+  const month = +document.getElementById('month').value;
+  const year = +document.getElementById('year').value;
+  const hour = +document.getElementById('hour').value || 12;
+  const minute = +document.getElementById('minute').value || 0;
+  const name = document.getElementById('name').value.trim() || "Toi";
+  const place = document.getElementById('place').value.trim() || "non précisé";
+
+  const birth = new Date(year, month-1, day, hour, minute);
+  const today = new Date();
+  if (birth > today) {
+    document.getElementById('result').textContent = "❌ Date dans le futur.";
+    return;
+  }
+
+  const age = calculateAge(birth, today);
+  let next = new Date(today.getFullYear(), month-1, day);
+  if (next < today) next = new Date(today.getFullYear()+1, month-1, day);
+  if (isNaN(next)) next = new Date(today.getFullYear()+1, 1, 28);
+  const daysUntil = Math.ceil((next - today) / 86400000);
+  const weekdays = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+
+  const sun = getSunSign(month, day);
+  const z = ZODIAC[sun];
+  const chinese = getChinese(year);
+  const moon = approxMoonSign(day, month, year, hour);
+  const asc = approxAscendant(hour, month);
+
+  const result = `${name} — ${day.toString().padStart(2,'0')}/${month.toString().padStart(2,'0')}/${year}
+Lieu : ${place} · Heure : ${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}
+
+🎂 Âge : ${age.years} ans, ${age.months} mois, ${age.days} jours
+
+☀️ Signe solaire : ${sun}
+   Élément : ${z.element} · Planète : ${z.planet}
+   Traits : ${z.traits}
+   Forces : ${z.strengths}
+
+🌙 Lune (approx.) : ${moon}
+⬆️ Ascendant (approx.) : ${asc}
+   → Plus précis avec heure + lieu exacts
+
+🐉 Chinois : ${chinese.animal} de ${chinese.element}
+
+🎉 Prochain anniversaire
+   ${next.getDate().toString().padStart(2,'0')}/${(next.getMonth()+1).toString().padStart(2,'0')}/${next.getFullYear()} (${weekdays[next.getDay()]})
+   Dans ${daysUntil} jour${daysUntil>1?'s':''} · Tu auras ${age.years+1} ans`;
+
+  document.getElementById('result').textContent = result;
+  saveBirthday({ name, day, month, year, hour, minute, place });
+  renderSaved();
+}
+
+function saveBirthday(data) {
+  let list = JSON.parse(localStorage.getItem('birthdays') || '[]');
+  list = list.filter(b => !(b.name === data.name && b.day === data.day && b.month === data.month && b.year === data.year));
+  list.unshift(data);
+  if (list.length > 15) list = list.slice(0,15);
+  localStorage.setItem('birthdays', JSON.stringify(list));
+}
+
+function renderSaved() {
+  const list = JSON.parse(localStorage.getItem('birthdays') || '[]');
+  const el = document.getElementById('savedList');
+  if (!list.length) { el.innerHTML = '<p style="color:var(--muted);font-size:0.8rem">Aucun pour le moment.</p>'; return; }
+  el.innerHTML = list.map((b,i) => `
+    <div class="saved-item">
+      <span>${b.name} — ${b.day}/${b.month}/${b.year}</span>
+      <button onclick="loadSaved(${i})">↺</button>
+    </div>
+  `).join('');
+}
+
+function loadSaved(i) {
+  const list = JSON.parse(localStorage.getItem('birthdays') || '[]');
+  const b = list[i];
+  if (!b) return;
+  document.getElementById('name').value = b.name || '';
+  document.getElementById('day').value = b.day;
+  document.getElementById('month').value = b.month;
+  document.getElementById('year').value = b.year;
+  document.getElementById('hour').value = b.hour || 12;
+  document.getElementById('minute').value = b.minute || 0;
+  document.getElementById('place').value = b.place || '';
+  calculate();
+}
+
+// Theme
+const themeBtn = document.getElementById('themeBtn');
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  themeBtn.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem('theme', t);
+}
+themeBtn.onclick = () => setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+setTheme(localStorage.getItem('theme') || 'dark');
+
+// Share
+document.getElementById('shareBtn').onclick = () => {
+  const text = document.getElementById('result').textContent;
+  if (navigator.share) {
+    navigator.share({ title: 'Mon profil Zodiac', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => alert('Résultat copié !'));
+  }
+};
+
+// SW
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+if (!isStandalone) {
+  document.getElementById('installHint').textContent = "💡 Menu navigateur → Ajouter à l'écran d'accueil pour installer";
+}
+
+renderSaved();
+</script>
+</body>
+</html>
