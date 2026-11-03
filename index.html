@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#059669">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Retraite">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.jpg">
+<title>Temps avant la retraite</title>
+<style>
+  :root {
+    --bg: #0f172a; --card: #1e293b; --card2: #0f172a;
+    --accent: #10b981; --accent-dark: #059669;
+    --text: #f1f5f9; --muted: #94a3b8; --border: #334155;
+  }
+  [data-theme="light"] {
+    --bg: #f8fafc; --card: #ffffff; --card2: #f1f5f9;
+    --text: #0f172a; --muted: #64748b; --border: #e2e8f0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; padding: 12px;
+    padding-top: max(12px, env(safe-area-inset-top));
+    transition: background .3s, color .3s;
+  }
+  .container {
+    width: 100%; max-width: 440px; margin: 0 auto;
+    background: var(--card); border-radius: 24px;
+    padding: 24px 18px 28px; box-shadow: 0 10px 40px rgba(0,0,0,.25);
+  }
+  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .top-bar h1 { font-size: 1.4rem; }
+  .theme-btn, .share-btn {
+    background: var(--card2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 10px; padding: 8px 12px;
+    font-size: .85rem; cursor: pointer;
+  }
+  .header-img { width: 64px; height: 64px; border-radius: 16px; margin: 0 auto 8px; display: block; }
+  .subtitle { text-align: center; color: var(--muted); font-size: .85rem; margin-bottom: 18px; }
+  label { display: block; margin: 12px 0 5px; font-size: .8rem; color: var(--muted); font-weight: 500; }
+  .row { display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 8px; }
+  select, input {
+    width: 100%; padding: 12px 8px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card2);
+    color: var(--text); font-size: .95rem;
+  }
+  button.primary {
+    width: 100%; margin-top: 18px; padding: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: white; border: none; border-radius: 12px;
+    font-size: 1.05rem; font-weight: 600; cursor: pointer;
+  }
+  button.primary:active { transform: scale(.98); }
+  #result {
+    margin-top: 18px; background: var(--card2); border-radius: 16px;
+    padding: 16px; font-size: .9rem; line-height: 1.55;
+    white-space: pre-wrap; min-height: 140px;
+  }
+  .saved { margin-top: 20px; }
+  .saved h3 { font-size: .95rem; margin-bottom: 8px; }
+  .saved-item {
+    background: var(--card2); border-radius: 10px; padding: 10px 12px;
+    margin-bottom: 6px; display: flex; justify-content: space-between;
+    align-items: center; font-size: .85rem;
+  }
+  .saved-item button { background: transparent; border: none; color: #ef4444; font-size: 1.1rem; cursor: pointer; }
+  .install-hint { text-align: center; font-size: .75rem; color: var(--muted); margin-top: 14px; }
+  .note { font-size: .75rem; color: var(--muted); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <h1>🏖️ Retraite</h1>
+    <div>
+      <button class="theme-btn" id="themeBtn">🌙</button>
+      <button class="share-btn" id="shareBtn" style="margin-left:6px">Partager</button>
+    </div>
+  </div>
+  <img src="icon-192.jpg" class="header-img" alt="">
+  <p class="subtitle">Calcule le temps restant avant ta retraite</p>
+
+  <label>Nom (optionnel)</label>
+  <input type="text" id="name" placeholder="Ex: Jean">
+
+  <label>Date de naissance</label>
+  <div class="row">
+    <select id="day"></select>
+    <select id="month">
+      <option value="1">Janvier</option><option value="2">Février</option><option value="3">Mars</option>
+      <option value="4">Avril</option><option value="5">Mai</option><option value="6">Juin</option>
+      <option value="7">Juillet</option><option value="8">Août</option><option value="9">Septembre</option>
+      <option value="10">Octobre</option><option value="11">Novembre</option><option value="12">Décembre</option>
+    </select>
+    <select id="year"></select>
+  </div>
+
+  <label>Âge de départ à la retraite souhaité</label>
+  <input type="number" id="retireAge" min="50" max="75" value="64" placeholder="64">
+
+  <p class="note">Calculs exacts basés sur ta date de naissance et l’âge choisi.</p>
+
+  <button class="primary" onclick="calculate()">✨ Calculer & Sauvegarder</button>
+
+  <div id="result">Entre ta date de naissance et l’âge de retraite souhaité.</div>
+
+  <div class="saved">
+    <h3>📌 Profils sauvegardés</h3>
+    <div id="savedList"></div>
+  </div>
+
+  <p class="install-hint" id="installHint"></p>
+</div>
+
+<script>
+const daySelect = document.getElementById('day');
+const yearSelect = document.getElementById('year');
+const currentYear = new Date().getFullYear();
+
+for (let d = 1; d <= 31; d++) {
+  const o = document.createElement('option'); o.value = d; o.textContent = d; daySelect.appendChild(o);
+}
+daySelect.value = 1;
+for (let y = currentYear - 18; y >= 1940; y--) {
+  const o = document.createElement('option'); o.value = y; o.textContent = y; yearSelect.appendChild(o);
+}
+yearSelect.value = 1985;
+
+function isLeapYear(y) {
+  return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+}
+
+function calculateAge(birth, today) {
+  let years = today.getFullYear() - birth.getFullYear();
+  let months = today.getMonth() - birth.getMonth();
+  let days = today.getDate() - birth.getDate();
+
+  if (days < 0) {
+    months--;
+    days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+  }
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+  return { years, months, days };
+}
+
+function getRetirementDate(birth, retireAge) {
+  let year = birth.getFullYear() + retireAge;
+  let month = birth.getMonth();
+  let day = birth.getDate();
+
+  // Gestion 29 février
+  if (month === 1 && day === 29 && !isLeapYear(year)) {
+    day = 28;
+  }
+  return new Date(year, month, day);
+}
+
+function calculate() {
+  const day = +document.getElementById('day').value;
+  const month = +document.getElementById('month').value;
+  const year = +document.getElementById('year').value;
+  const retireAge = +document.getElementById('retireAge').value;
+  const name = document.getElementById('name').value.trim() || "Toi";
+
+  if (!retireAge || retireAge < 50 || retireAge > 80) {
+    document.getElementById('result').textContent = "❌ Âge de retraite invalide (entre 50 et 80).";
+    return;
+  }
+
+  const birth = new Date(year, month - 1, day);
+  if (birth.getFullYear() !== year || birth.getMonth() !== month - 1 || birth.getDate() !== day) {
+    document.getElementById('result').textContent = "❌ Date de naissance invalide.";
+    return;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (birth > today) {
+    document.getElementById('result').textContent = "❌ Date de naissance dans le futur.";
+    return;
+  }
+
+  const age = calculateAge(birth, today);
+  const retirementDate = getRetirementDate(birth, retireAge);
+
+  if (retirementDate <= today) {
+    document.getElementById('result').textContent = `🎉 ${name}, tu as déjà atteint ou dépassé l’âge de ${retireAge} ans !\n\nTu as actuellement ${age.years} ans.`;
+    return;
+  }
+
+  const remaining = calculateAge(today, retirementDate); // temps restant
+  const totalDays = Math.ceil((retirementDate - today) / 86400000);
+  const weekdays = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+
+  const result = `${name} — né(e) le ${day.toString().padStart(2,'0')}/${month.toString().padStart(2,'0')}/${year}
+
+🎂 Âge actuel : ${age.years} ans, ${age.months} mois, ${age.days} jours
+
+🏖️ Retraite souhaitée à ${retireAge} ans
+Date estimée : ${retirementDate.getDate().toString().padStart(2,'0')}/${(retirementDate.getMonth()+1).toString().padStart(2,'0')}/${retirementDate.getFullYear()} (${weekdays[retirementDate.getDay()]})
+
+⏳ Temps restant :
+${remaining.years} ans, ${remaining.months} mois et ${remaining.days} jours
+Soit environ ${totalDays.toLocaleString('fr-FR')} jours
+
+💪 Encore ${remaining.years} ans de travail !`;
+
+  document.getElementById('result').textContent = result;
+  saveProfile({ name, day, month, year, retireAge });
+  renderSaved();
+}
+
+function saveProfile(data) {
+  let list = JSON.parse(localStorage.getItem('retraiteProfiles') || '[]');
+  list = list.filter(p => !(p.name === data.name && p.day === data.day && p.month === data.month && p.year === data.year));
+  list.unshift(data);
+  if (list.length > 10) list = list.slice(0, 10);
+  localStorage.setItem('retraiteProfiles', JSON.stringify(list));
+}
+
+function renderSaved() {
+  const list = JSON.parse(localStorage.getItem('retraiteProfiles') || '[]');
+  const el = document.getElementById('savedList');
+  if (!list.length) {
+    el.innerHTML = '<p style="color:var(--muted);font-size:0.8rem">Aucun profil sauvegardé.</p>';
+    return;
+  }
+  el.innerHTML = list.map((p, i) => `
+    <div class="saved-item">
+      <span>${p.name} — retraite à ${p.retireAge} ans</span>
+      <button onclick="loadSaved(${i})">↺</button>
+    </div>
+  `).join('');
+}
+
+function loadSaved(i) {
+  const list = JSON.parse(localStorage.getItem('retraiteProfiles') || '[]');
+  const p = list[i];
+  if (!p) return;
+  document.getElementById('name').value = p.name || '';
+  document.getElementById('day').value = p.day;
+  document.getElementById('month').value = p.month;
+  document.getElementById('year').value = p.year;
+  document.getElementById('retireAge').value = p.retireAge;
+  calculate();
+}
+
+// Theme
+const themeBtn = document.getElementById('themeBtn');
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  themeBtn.textContent = t === 'light' ? '☀️' : '🌙';
+  localStorage.setItem('theme', t);
+}
+themeBtn.onclick = () => setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+setTheme(localStorage.getItem('theme') || 'dark');
+
+// Share
+document.getElementById('shareBtn').onclick = () => {
+  const text = document.getElementById('result').textContent;
+  if (navigator.share) {
+    navigator.share({ title: 'Temps avant ma retraite', text });
+  } else {
+    navigator.clipboard.writeText(text).then(() => alert('Résultat copié !'));
+  }
+};
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+if (!isStandalone) {
+  document.getElementById('installHint').textContent = "💡 Menu navigateur → Ajouter à l'écran d'accueil pour installer";
+}
+
+renderSaved();
+</script>
+</body>
+</html>
