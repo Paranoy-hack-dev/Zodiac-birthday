@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memento Mori - Temps Restant</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="mist"></div>
+    <div class="container">
+        <header>
+            <h1>Memento Mori</h1>
+            <p class="subtitle">Le temps qui te reste</p>
+        </header>
+
+        <div class="controls">
+            <div class="input-group">
+                <label for="birthdate">Date de naissance</label>
+                <input type="date" id="birthdate" required>
+            </div>
+            <div class="input-group">
+                <label for="gender">Base de calcul</label>
+                <select id="gender">
+                    <option value="74">Moyenne mondiale (~74 ans)</option>
+                    <option value="71">Homme (~71 ans)</option>
+                    <option value="76">Femme (~76 ans)</option>
+                    <option value="custom">Personnalisé</option>
+                </select>
+            </div>
+            <div class="input-group" id="custom-group" style="display:none;">
+                <label for="customAge">Âge d'espérance (années)</label>
+                <input type="number" id="customAge" min="1" max="120" value="75">
+            </div>
+            <button id="calculate">Graver</button>
+        </div>
+
+        <div class="tombstone-wrapper">
+            <div class="tombstone" id="tombstone">
+                <div class="tombstone-top"></div>
+                <div class="inscription">
+                    <div class="rip">R.I.P.</div>
+                    <div class="remaining-label">Il te reste</div>
+                    <div class="big-number" id="days-remaining">---</div>
+                    <div class="big-unit">jours</div>
+                    <div class="details" id="details">
+                        <div><span id="years">0</span> ans</div>
+                        <div><span id="months">0</span> mois</div>
+                        <div><span id="hours">0</span> heures</div>
+                        <div><span id="moons">0</span> lunes</div>
+                    </div>
+                    <div class="live-time" id="live-seconds">00:00:00</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Basé sur l'espérance de vie moyenne mondiale (UN, ~73.8 ans en 2026).<br>Chaque seconde compte. Utilise-la.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

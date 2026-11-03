@@ -1,0 +1,229 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #050505;
+    color: #d4d4d4;
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.mist {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at 50% 0%, rgba(30,30,30,0.6) 0%, transparent 70%),
+                linear-gradient(180deg, #0a0a0a 0%, #000 100%);
+    pointer-events: none;
+    z-index: 0;
+    animation: mistDrift 20s ease-in-out infinite alternate;
+}
+
+@keyframes mistDrift {
+    0% { opacity: 0.7; transform: translateY(0); }
+    100% { opacity: 1; transform: translateY(-10px); }
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 3.5rem;
+    letter-spacing: 0.3em;
+    color: #c9c9c9;
+    text-shadow: 0 0 20px rgba(0,0,0,0.8);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-style: italic;
+    font-size: 1.4rem;
+    color: #888;
+    margin-bottom: 2rem;
+}
+
+.controls {
+    background: rgba(20,20,20,0.8);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: end;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 180px;
+}
+
+.input-group label {
+    font-size: 0.9rem;
+    color: #aaa;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.05em;
+}
+
+input, select, button {
+    background: #1a1a1a;
+    border: 1px solid #444;
+    color: #e0e0e0;
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #666;
+}
+
+button {
+    background: #2a2a2a;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.1em;
+    transition: all 0.3s;
+    height: 42px;
+}
+
+button:hover {
+    background: #3a3a3a;
+    border-color: #888;
+}
+
+.tombstone-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.tombstone {
+    width: 380px;
+    background: linear-gradient(145deg, #4a4a4a, #2e2e2e);
+    border-radius: 180px 180px 20px 20px;
+    box-shadow: 
+        0 20px 40px rgba(0,0,0,0.8),
+        inset 0 2px 5px rgba(255,255,255,0.1),
+        inset 0 -10px 20px rgba(0,0,0,0.5);
+    position: relative;
+    padding: 3rem 2rem 2rem;
+    border: 2px solid #555;
+}
+
+.tombstone::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 40px;
+    background: linear-gradient(145deg, #5a5a5a, #3a3a3a);
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+}
+
+.inscription {
+    text-align: center;
+    color: #e8e8e8;
+    text-shadow: 1px 1px 2px #000, -1px -1px 1px rgba(255,255,255,0.1);
+}
+
+.rip {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    letter-spacing: 0.5em;
+    margin-bottom: 1rem;
+    color: #bbb;
+}
+
+.remaining-label {
+    font-style: italic;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #aaa;
+}
+
+.big-number {
+    font-family: 'Cinzel', serif;
+    font-size: 4.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #f0f0f0;
+    margin: 0.5rem 0;
+}
+
+.big-unit {
+    font-size: 1.5rem;
+    letter-spacing: 0.2em;
+    margin-bottom: 1.5rem;
+    color: #ccc;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    margin: 1rem 0;
+    color: #bbb;
+}
+
+.details span {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: #fff;
+}
+
+.live-time {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.15em;
+    margin-top: 1rem;
+    color: #ddd;
+    border-top: 1px solid #555;
+    padding-top: 1rem;
+}
+
+footer {
+    margin-top: 3rem;
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+}
+
+@media (max-width: 500px) {
+    .tombstone {
+        width: 100%;
+        max-width: 320px;
+    }
+    .big-number {
+        font-size: 3.2rem;
+    }
+    header h1 {
+        font-size: 2.5rem;
+        letter-spacing: 0.2em;
+    }
+}
